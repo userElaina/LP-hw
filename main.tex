@@ -1,0 +1,702 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{fullpage}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\usepackage[parfill]{parskip}
+
+\usepackage[UTF8]{ctex}
+
+\begin{document}
+
+\subsection*{Example: The Diet Problem}
+
+\begin{eqnarray*}
+ \textrm{Sets} &  F & \textrm{set of food items} \\
+               &  N  & \textrm{set of nutrients} \\
+ \textrm{Parameters} & c_i, i\in F  & \textrm{cost of food $i$}  \\
+& n_{ji}, j \in N, i \in F & \textrm{amount of nutrient $j$ in food $i$}  \\
+& n^L_j, j\in N  &\textrm{minimum amount of nutrient $j$ required} \\
+& n^U_j, j\in N  &\textrm{maximum amount of nutrient $j$ allowed} \\
+ \textrm{Variables} & X_i, i\in F & \textrm{amount of food $i$ to consume}
+\end{eqnarray*}
+\begin{eqnarray*}
+\textrm{Minimize:}\\
+& \displaystyle \sum_{i\in F} c_i X_i & \textrm{minimize total cost of food}\\
+\textrm{Subject to:}\\
+& n^L_j \leq \sum_{i \in F} n_{ji} X_{i} \leq n^U_j \quad \forall j \in N & \textrm{consumption of nutrients in allowable range}
+\end{eqnarray*}
+
+This sample solution is concise; it gives the linear program
+formulation with text describing each element of the model but nothing
+more. Some explanations, and classes of the optimization problem. What specific graph problems does it solve?
+
+
+\newpage
+\subsection*{Problem 1: Shortest path problem}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Constants} \\
+        & a, b \in V & \textrm{shortest path from $a$ to $b$} \\
+    \textrm{Variables} \\
+        & X \subseteq E & \textrm{selected edges} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            l(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0,                              & i == j \\
+                    \infty,                         & \{i, j\} \notin E \\
+                    \mathrm{length\ of\ }\{i, j\},  & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            l(i, j) &= l(\{i, j\})
+        \end{array}, i, j \in V & \textrm{distance between vertices} \\
+    \textrm{Minimize} \\
+        & \displaystyle \sum_{x \in X} l(x) & \textrm{最小化路径长度} \\
+    \textrm{Subject to} \\ 
+        & \begin{array}{rl}
+            \exists & \{i_1, j_1\}, \{i_2, j_2\}, ..., \{i_k, j_k\}, ..., \{i_n, j_n\} \\
+            \mathrm{s.t.,} & i_1 = a, i_k = j_{k-1}, j_n = b \\
+                    & \{i_k, j_k\} \in X, n \leq |X|, k = 2, 3, ..., n
+        \end{array} & \textrm{保证为一条 $a$ 到 $b$ 的路径} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 2: Disjoint-set problem}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables}
+        & x_i, i \in V & \textrm{通常认为是点所属的连通块的序号} \\
+    \textrm{Minimize} \\
+        & |\{x_i | i \in V \}| & \textrm{最小化连通块数量} \\
+    \textrm{Subject to} \\
+        & c_i == c_j \to \{i, j\} \in E, i \neq j & \textrm{两点存在边才可标记为联通} \\
+\end{eqnarray*}
+
+当在无向图上，当连通块数量最小时，得到了一个并查集数据结构。当在有向图上，该问题为强联通分量问题。
+
+\newpage
+\subsection*{Problem 3: 最大环问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & X \subseteq E & \textrm{selected edges} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            l(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0,                              & i == j \\
+                    \infty,                         & \{i, j\} \notin E \\
+                    \mathrm{length\ of\ }\{i, j\},  & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            l(i, j) &= l(\{i, j\})
+        \end{array}, i, j \in V & \textrm{distance between vertices} \\
+    \textrm{Maximize} \\
+        & \displaystyle \sum_{x \in X} l(x) & \textrm{最大化路径长度} \\
+    \textrm{Subject to} \\
+        & \begin{array}{rl}
+            \exists & \{i_1, j_1\}, \{i_2, j_2\}, ..., \{i_k, j_k\}, ..., \{i_n, j_n\} \\
+            \mathrm{s.t.,} & i_1 = j_n, i_k = j_{k-1} \\
+                    & \{i_k, j_k\} \in X, n = |X|, k = 2, 3, ..., n
+        \end{array} & \textrm{保证为一个环} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 4: Travelling salesman problem}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & X \subseteq E & \textrm{selected edges} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            l(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0,                              & i == j \\
+                    \infty,                         & \{i, j\} \notin E \\
+                    \mathrm{length\ of\ }\{i, j\},  & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            l(i, j) &= l(\{i, j\})
+        \end{array}, i, j \in V & \textrm{distance between vertices} \\
+    \textrm{Minimize} \\
+        & \displaystyle \sum_{x \in X} l(x) & \textrm{最小化路径长度} \\
+    \textrm{Subject to} \\
+        & |X| = |V| \\
+        & \begin{array}{rl}
+            \exists & \{i_1, j_1\}, \{i_2, j_2\}, ..., \{i_k, j_k\}, ..., \{i_n, j_n\} \\
+            \mathrm{s.t.,} & i_1 = j_n, i_k = j_{k-1} \\
+                    & \{i_k, j_k\} \in X, n = |X|, k = 2, 3, ..., n
+        \end{array} & \textrm{保证为一个环} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 5: 二分图匹配}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & X \subseteq E & \textrm{selected edges} \\
+    \textrm{Minimize} \\
+        & \displaystyle |X| & \textrm{最大化匹配数量} \\
+    \textrm{Subject to} \\
+        & |\{i | \{i, j\} \in X\} \cup \{j | \{i, j\} \in X\}| = 2 |X| & \textrm{保证没有重复匹配} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 6: 最小支撑树问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & X \subseteq E & \textrm{selected edges} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            l(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0,                              & i == j \\
+                    \infty,                         & \{i, j\} \notin E \\
+                    \mathrm{length\ of\ }\{i, j\},  & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            l(i, j) &= l(\{i, j\})
+        \end{array}, i, j \in V & \textrm{distance between vertices} \\
+    \textrm{Constants} \\
+        & A \subseteq V & \textrm{求 $A$ 的最小支撑树} \\
+    \textrm{Minimize} \\
+        & \displaystyle \sum_{x \in X} l(x) & \textrm{最小化支撑树路径长度} \\
+    \textrm{Subject to} \\
+        & \begin{array}{rl}
+            \forall & a, b \in A, a \neq b \\
+            \exists & \{i_1, j_1\}, \{i_2, j_2\}, ..., \{i_k, j_k\}, ..., \{i_n, j_n\} \\
+            \mathrm{s.t.,} & i_1 = a, i_k = j_{k-1}, j_n = b \\
+                    & \{i_k, j_k\} \in X, n \leq |X|, k = 2, 3, ..., n
+        \end{array} & \textrm{保证有一条 $a$ 到 $b$ 的路径} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 7: 最小单向支撑树问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & X \subseteq E & \textrm{selected edges} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            l(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0,                              & i == j \\
+                    \infty,                         & \{i, j\} \notin E \\
+                    \mathrm{length\ of\ }\{i, j\},  & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            l(i, j) &= l(\{i, j\})
+        \end{array}, i, j \in V & \textrm{distance between vertices} \\
+    \textrm{Constants} \\
+        & a \subseteq V, B \in V & \textrm{求 $a$ 到 $B$ 的最小支撑树} \\
+    \textrm{Minimize} \\
+        & \displaystyle \sum_{x \in X} l(x) & \textrm{最小化支撑树路径长度} \\
+    \textrm{Subject to} \\
+        & \begin{array}{rl}
+            \forall & b \in B \\
+            \exists & \{i_1, j_1\}, \{i_2, j_2\}, ..., \{i_k, j_k\}, ..., \{i_n, j_n\} \\
+            \mathrm{s.t.,} & i_1 = a, i_k = j_{k-1}, j_n = b \\
+                    & \{i_k, j_k\} \in X, n \leq |X|, k = 2, 3, ..., n
+        \end{array} & \textrm{保证有一条 $a$ 到 $b$ 的路径} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 8: Maximum flow problem}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Constants} \\
+        & s \in V & \textrm{源点} \\
+        & t \in V & \textrm{汇点} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            w(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0, & i == j \\
+                    0, & \{i, j\} \notin E \\
+                    \mathrm{weight\ of\ }\{i, j\}, & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            w(i, j) &= w(\{i, j\})
+        \end{array}, i, j \in V & \textrm{边权重} \\
+    \textrm{Parameters} \\
+        & f_{uv}, u, v \in V & \textrm{每条边的流量} \\
+    \textrm{Maximize} \\
+        & \displaystyle \sum_{v: \{s, v\} \in E} f_{sv} & \textrm{最大化流} \\
+    \textrm{Subject to} \\
+        & f_{uv} \leq w(u, v), \forall \{u, v\} \in E & \textrm{容量限制} \\
+        & \displaystyle \sum_{v: \{u, v\} \in E} f_{uv} = \sum_{v: \{v, w\} \in E} f_{vw}, \forall v \in V - \{s, t\} & \textrm{流的保留} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 9: Four color theorem}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & x_i, i \in V & \textrm{点为地图中的国家 $,x_i$ 为其颜色} \\
+    \textrm{Minimize} \\
+        & |\{x_i | i \in V\}| & \textrm{最小化颜色数量} \\
+    \textrm{Subject to} \\
+        & \{i, j\} \in E \to x_i \neq x_j & \textrm{相邻国家不同色} \\
+\end{eqnarray*}
+
+\newpage
+\subsection*{Problem 10: 菊花图中心问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & x \in V & \textrm{菊花图中心} \\
+    \textrm{Maximize} \\
+        & |\{\{x, j\} | \{x, j\} \in E\}| & \textrm{最大化权重} \\
+\end{eqnarray*}
+
+\newpage
+\subsection*{Problem 11: 双菊花图切割问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Constants} \\
+        & a, b \in V & \textrm{两个菊花中心} \\
+    \textrm{Variables} \\
+        & x \in V & \textrm{切割点} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            f_1(\{i, j\}) &= \textrm{Problem 1 中的最短路} \\
+            f_1(i, j) &= f_1(\{i, j\}) \\
+        \end{array}, i, j \in V & \textrm{最短路} \\
+    \textrm{Minimize} \\
+        & f_1(a, x) + f_1(x, b) & \textrm{最小化最短路之和} \\
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 12: 最小费用最大流问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Constants} \\
+        & s \in V & \textrm{源点} \\
+        & t \in V & \textrm{汇点} \\
+        & 0 \leq \beta < 1 & \textrm{费用权重参数} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            w(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0, & i == j \\
+                    0, & \{i, j\} \notin E \\
+                    \mathrm{weight\ of\ }\{i, j\}, & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            w(i, j) &= w(\{i, j\})
+        \end{array}, i, j \in V & \textrm{边权重} \\
+    \textrm{Parameters} \\
+        & f_{uv}, u, v \in V & \textrm{每条边的流量} \\
+    \textrm{Maximize} \\
+        & \displaystyle (\sum_{v: \{s, v\} \in E} f_{sv}) - \beta \sum_{u, v: \{u, v\} \in E} f_{uv} & \textrm{} \\
+    \textrm{Subject to} \\
+        & f_{uv} \leq w(u, v), \forall \{u, v\} \in E & \textrm{容量限制} \\
+        & \displaystyle \sum_{v: \{u, v\} \in E} f_{uv} = \sum_{v: \{v, w\} \in E} f_{vw}, \forall v \in V - \{s, t\} & \textrm{流的保留} \\ 
+\end{eqnarray*}
+
+在算法竞赛中，通常 $\beta$ 将非常小，使得项 $\displaystyle \beta \sum_{u, v: \{u, v\} \in E} f_{uv} < 1, 1$ 为单位流量.
+
+
+\newpage
+\subsection*{Problem 13: 最小生成树问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & X \subseteq E & \textrm{selected edges} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            l(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0,                              & i == j \\
+                    \infty,                         & \{i, j\} \notin E \\
+                    \mathrm{length\ of\ }\{i, j\},  & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            l(i, j) &= l(\{i, j\})
+        \end{array}, i, j \in V & \textrm{distance between vertices} \\
+    \textrm{Minimize} \\
+        & \displaystyle \sum_{x \in X} l(x) & \textrm{最小化生成树路径长度} \\
+    \textrm{Subject to} \\
+        & |X| = |V| - 1 & \textrm{树的边数} \\
+        & \begin{array}{rl}
+            \forall & a, b \in V, a \neq b \\
+            \exists & \{i_1, j_1\}, \{i_2, j_2\}, ..., \{i_k, j_k\}, ..., \{i_n, j_n\} \\
+            \mathrm{s.t.,} & i_1 = a, i_k = j_{k-1}, j_n = b \\
+                    & \{i_k, j_k\} \in X, n < |V|, k = 2, 3, ..., n
+        \end{array} & \textrm{保证有一条 $a$ 到 $b$ 的路径} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 14: 点划分问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Constants} \\
+        & c & \textrm{点划分数量} \\
+    \textrm{Variables} \\
+        & \mathcal{X} & \textrm{点的分划} \\
+    \textrm{Functions} \\
+        & w(i) = \mathrm{weight\ of\ } i, i \in V & \textrm{点权重} \\
+        & W(X) = \sum_{x \in X} w(x) , X \subseteq V & \textrm{点集权重} \\
+    \textrm{Minimize} \\
+        & \displaystyle \max_{X, Y \in \mathcal{X}} W(X) - W(Y) & \textrm{最小化差距} \\
+    \textrm{Subject to} \\
+        & |\mathcal{X}| = c & \\
+        & \begin{array}{rl}
+            \forall & X \in \mathcal{X} \\
+            \forall & a, b \in X, a \neq b \\
+            \exists & \{i_1, j_1\}, \{i_2, j_2\}, ..., \{i_k, j_k\}, ..., \{i_n, j_n\} \\
+            \mathrm{s.t.,} & i_1 = a, i_k = j_{k-1}, j_n = b \\
+                    & i_k, j_k \in X, \{i_k, j_k\} \in E, n < |V|, k = 2, 3, ..., n
+        \end{array} & \textrm{保证 $X$ 构成联通图} \\ 
+\end{eqnarray*}
+\newpage
+
+
+\subsection*{Problem 15: 边划分问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Constants} \\
+        & c & \textrm{边划分数量} \\
+    \textrm{Variables} \\
+        & \mathcal{X} & \textrm{边的分划} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            w(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0, & i == j \\
+                    0, & \{i, j\} \notin E \\
+                    \mathrm{weight\ of\ }\{i, j\}, & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            w(i, j) &= w(\{i, j\})
+        \end{array}, i, j \in V & \textrm{边权重} \\
+        & \displaystyle W(X) = \sum_{x \in X} w(x) , X \subseteq V & \textrm{边集权重} \\
+        & V(X) = \{i | \{i, j\} \in X\} & \textrm{边集涉及的点集} \\
+    \textrm{Minimize} \\
+        & \displaystyle \max_{X, Y \in \mathcal{X}} W(X) - W(Y) & \textrm{最小化差距} \\
+    \textrm{Subject to} \\
+        & |\mathcal{X}| = c & \\
+        & \begin{array}{rl}
+            \forall & X \in \mathcal{X} \\
+            \forall & a, b \in V(X), a \neq b \\
+            \exists & \{i_1, j_1\}, \{i_2, j_2\}, ..., \{i_k, j_k\}, ..., \{i_n, j_n\} \\
+            \mathrm{s.t.,} & i_1 = a, i_k = j_{k-1}, j_n = b \\
+                    & \{i_k, j_k\} \in X, n < |V|, k = 2, 3, ..., n
+        \end{array} & \textrm{保证 $X$ 构成联通图} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 16: 最大团问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & X \subseteq V & \textrm{selected vertices} \\
+    \textrm{Maximize} \\
+        & \displaystyle |X| & \textrm{最大化团大小} \\
+    \textrm{Subject to} \\
+        & \{a, b\} \in E, \forall a, b \in V & \textrm{保证是团} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 17: 最小割问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Constants} \\
+        & s \in V & \textrm{源点} \\
+        & t \in V & \textrm{汇点} \\
+    \textrm{Variables} \\
+        & X \subseteq E & \textrm{selected edges} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            l(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0,                              & i == j \\
+                    \infty,                         & \{i, j\} \notin E \\
+                    \mathrm{length\ of\ }\{i, j\},  & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            l(i, j) &= l(\{i, j\})
+        \end{array}, i, j \in V & \textrm{distance between vertices} \\
+    \textrm{Minimize} \\
+        & \displaystyle \sum_{x \in X} l(x) & \textrm{最小化代价} \\
+    \textrm{Subject to} \\
+        & \begin{array}{rl}
+            \exists & A, B \subset V \\
+            \mathrm{s.t.,} & s \in A, t \in B, \{a, b\} \notin E - X, \forall a \in A, b \in B \\
+        \end{array} & \textrm{保证 s 和 t 不联通} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 18: 树的最优根结点问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & x \in V & \textrm{根结点} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            f_1(\{i, j\}) &= \textrm{Problem 1 中的最短路} \\
+            f_1(i, j) &= f_1(\{i, j\}) \\
+        \end{array}, i, j \in V & \textrm{最短路} \\
+    \textrm{Minimize} \\
+        & \displaystyle \sum_{v \in V} f_1(x, v) & \textrm{最小化最短路之和} \\
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 19: 最大生成链问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & X \subseteq E & \textrm{selected edges} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            l(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0,                              & i == j \\
+                    \infty,                         & \{i, j\} \notin E \\
+                    \mathrm{length\ of\ }\{i, j\},  & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            l(i, j) &= l(\{i, j\})
+        \end{array}, i, j \in V & \textrm{distance between vertices} \\
+        & V(X) = \{i, j | \{i, j\} \in X\} & \textrm{边集涉及的点集} \\
+    \textrm{Maximize} \\
+        & \displaystyle \sum_{x \in X} l(x) & \textrm{最大化路径长度} \\
+    \textrm{Subject to} \\ 
+        & |X| = |V(X)| - 1 & \textrm{链也是树} \\
+        & \begin{array}{rl}
+            \exists & \{i_1, j_1\}, \{i_2, j_2\}, ..., \{i_k, j_k\}, ..., \{i_n, j_n\} \\
+            \mathrm{s.t.,} & i_1 \neq j_n, i_k = j_{k-1}\\
+                    & \{i_k, j_k\} \in X, n \leq |X|, k = 2, 3, ..., n
+        \end{array} & \textrm{保证为一条路径} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 20: 边染色问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & x_{ij}, \{i, j\} \in E & \textrm{$x_i$ 为边的颜色} \\
+    \textrm{Minimize} \\
+        & |\{x_i | i \in V\}| & \textrm{最小化颜色数量} \\
+    \textrm{Subject to} \\
+        & \{i, j\}, \{i, k\} \in E \to x_{ij} \neq x_{ik} & \textrm{相邻边不同色} \\
+\end{eqnarray*}
+
+
+
+\newpage
+\subsection*{Problem 21: 独立集问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & X \subseteq V & \textrm{selected vertices} \\
+    \textrm{Maximize} \\
+        & \displaystyle |X| & \textrm{最大化独立集大小} \\
+    \textrm{Subject to} \\
+        & \{a, b\} \notin E, \forall a, b \in V & \textrm{保证是独立集} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 22: 路线检查问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & x_1, x_2, ..., x_n \subseteq E & \textrm{是一个边序列} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            l(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0,                              & i == j \\
+                    \infty,                         & \{i, j\} \notin E \\
+                    \mathrm{length\ of\ }\{i, j\},  & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            l(i, j) &= l(\{i, j\})
+        \end{array}, i, j \in V & \textrm{distance between vertices} \\
+    \textrm{Minimize} \\
+        & \displaystyle \sum_{i=1}^n l(x_i) & \textrm{最小化路径长度} \\
+    \textrm{Subject to} \\
+        & n \in \mathbb{N}^+ & \\
+        & \begin{array}{rl}
+            \forall & e \in E, \\
+            \exists & i \in \mathbb{N} \cap [1, n] \\
+            \mathrm{s.t.,} & x_i = e \\
+        \end{array} & \textrm{保证为一个环} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 23: 最小支配集问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & X \subseteq V & \textrm{selected vertices} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            l(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0,                              & i == j \\
+                    \infty,                         & \{i, j\} \notin E \\
+                    \mathrm{length\ of\ }\{i, j\},  & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            l(i, j) &= l(\{i, j\})
+        \end{array}, i, j \in V & \textrm{distance between vertices} \\
+    \textrm{Minimize} \\
+        & \displaystyle |X| & \textrm{最小化支配集大小} \\
+    \textrm{Subject to} \\
+        & \begin{array}{rl}
+            \forall & v \in V \\
+            \exists & x \in X \\
+            \mathrm{s.t.,} & l(x, v) \neq \infty \\
+        \end{array} & \textrm{保证为一个支配集} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 24: 斯坦纳树问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & X \subseteq E & \textrm{selected edges} \\
+    \textrm{Functions} \\
+        & \begin{array}{rl}
+            l(\{i, j\}) &= \left\{
+                \begin{array}{ll}
+                    0,                              & i == j \\
+                    \infty,                         & \{i, j\} \notin E \\
+                    \mathrm{length\ of\ }\{i, j\},  & \{i, j\} \in E \\
+                \end{array}
+            \right. \\
+            l(i, j) &= l(\{i, j\})
+        \end{array}, i, j \in V & \textrm{distance between vertices} \\
+    \textrm{Constants} \\
+        & a \in V & \textrm{求 $a$ 的斯坦纳树} \\
+    \textrm{Minimize} \\
+        & \displaystyle \sum_{x \in X} l(x) & \textrm{最小化斯坦纳树路径长度} \\
+    \textrm{Subject to} \\
+        & |X| = |V| - 1 & \textrm{树的边数} \\
+        & \begin{array}{rl}
+            \forall & b \in V, b \neq a \\
+            \exists & \{i_1, j_1\}, \{i_2, j_2\}, ..., \{i_k, j_k\}, ..., \{i_n, j_n\} \\
+            \mathrm{s.t.,} & i_1 = a, i_k = j_{k-1}, j_n = b \\
+                    & \{i_k, j_k\} \in X, n \leq |X|, k = 2, 3, ..., n
+        \end{array} & \textrm{保证有一条 $a$ 到 $b$ 的路径} \\ 
+\end{eqnarray*}
+
+
+\newpage
+\subsection*{Problem 25: 最大联通块问题}
+
+\begin{eqnarray*}
+    \textrm{Sets} \\
+        & V & \textrm{set of vertices} \\
+        & E & \textrm{set of edges} \\
+    \textrm{Variables} \\
+        & X \subseteq V & \textrm{selected vertices} \\
+    \textrm{Maximize} \\
+        & \displaystyle |X| & \textrm{最大化点集} \\
+    \textrm{Subject to} \\ 
+        & \begin{array}{rl}
+            \forall & a, b \in X, \\
+            \exists & \{i_1, j_1\}, \{i_2, j_2\}, ..., \{i_k, j_k\}, ..., \{i_n, j_n\} \\
+            \mathrm{s.t.,} & i_1 = a, i_k = j_{k-1}, j_n = b \\
+                    & \{i_k, j_k\} \in X, n \leq |X|, k = 2, 3, ..., n
+        \end{array} & \textrm{保证有一条 $a$ 到 $b$ 的路径} \\ 
+\end{eqnarray*}
+
+\end{document}  
